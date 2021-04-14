@@ -7,9 +7,12 @@ You can print to Windows printers (using the print queue so windows takes care o
 
 Example:
 
-	string plantilla = "<C><RESET/><CENTER/><B>Hello!</B><BR><BR><END/></C>";
-
-	XML2ESCPOS.XML2ESCPOS.Print("Epson", plantilla, false);
+    XML2ESCPOS.Engine xML2ESCPOS = new XML2ESCPOS.Engine
+    {
+         Template = "<C><RESET/><CENTER/><B>Hello!</B><BR><BR><END/></C>",
+         PrinterName = "Epson"
+    };
+    xML2ESCPOS.Print();
 
 Printer print:
 
@@ -17,34 +20,22 @@ Printer print:
 
 
 
-#### Usage:
+#### Engine Properties:
 
-**Print(PrinterOrIP, Plantilla, EsIP, NombreTrabajo, CodePage, Vars, BucleVars)**
-		
-ImpresoraOrIP: (Required String) Windows Printer Name if EsIP = false or IP Address if EsIP = true
+PrinterName: Windows Printer Name. When PrinterName is set, PrinterIP is disabled 
 
-Plantilla: (Required String) String with the Template
+PrinterIP: Printer IP Address. When PrinterIP is set, PrinterName is disabled
 
-EsIP: (Optional Bool, Default is True) If PrinterOrIp is System Windows Printer Name you must set to false.
-If PrinterOrIP is Ip Address you can ignore it or you can set to True
+Plantilla: String with the Template
 
-NombreTrabajo: (Optional String, Default is "Printer Job") Print job name
+PrintJobName: (Default is "PrintJob") Print job name
 
-CodePage: (Optional Int, Default is 858) Codepage that has the thermal printer configured.
+CodePage: (Default is 858) Codepage that has the thermal printer configured.
 https://docs.microsoft.com/en-us/windows/win32/intl/code-page-identifiers
 
-Vars: (Opcional List<KeyValuePair<string, string>>) List of the variables that you are going to use with their name and value. [More Info](#Vars)
+Vars: (List<KeyValuePair<string, string>>) List of the variables that you are going to use with their name and value. [More Info](#Vars)
 
-BubleVars: (Opcional IEnumerable<KeyValuePair<string, string>>) List of variables that are the lists that you will use with each loop with its name [More Info](#BucleVars)
-
-**OpenDrawer(PrinterOrIP, EsIP)**
-
-Only Open Drawer		
-
-ImpresoraOrIP: (Required String) Windows Printer Name if EsIP = false or IP Address if EsIP = true
-
-EsIP: (Optional Bool, Default is True) If PrinterOrIp is System Windows Printer Name you must set to false.
-If PrinterOrIP is Ip Address you can ignore it or you can set to True
+BubleVars: (List<KeyValuePair<string, string>>) List of variables that are the lists that you will use with each loop with its name [More Info](#BucleVars)
 
 #### XML Codes:
 
@@ -90,13 +81,16 @@ Example:
 
 		"<IFNOTNULL VARNAME='MyName'><B>Hello <![CDATA[YourName]]>!</B></IFNOTNULL><BR><END/></C>";
 	
-	List<KeyValuePair<string, string>> valores = new List<KeyValuePair<string, string>>();
-	
-	valores.Add(new KeyValuePair<string, string>("MyName", "Jesus"));
+	XML2ESCPOS.Engine xML2ESCPOS = new XML2ESCPOS.Engine
+            {
+                Template = plantilla,
+                PrinterName = "Epson"
+            };
 
-	valores.Add(new KeyValuePair<string, string>("YourName", "  "));
-	
-	XML2ESCPOS.XML2ESCPOS.Print("Epson", plantilla, false, Vars:valores);	
+    xML2ESCPOS.Vars.Add(new KeyValuePair<string, string>("MyName", "Jesus"));
+    xML2ESCPOS.Vars.Add(new KeyValuePair<string, string>("YourName", "  "));
+
+	xML2ESCPOS.Print();
 
 Printer Print:
 
@@ -108,13 +102,13 @@ Printer Print:
 #### Vars:
 Example:
 
-	string plantilla = "<C><RESET/><LEFT/><B>Hello <![CDATA[MyName]]>!</B><BR><BR><END/></C>";
-	
-	List<KeyValuePair<string, string>> valores = new List<KeyValuePair<string, string>>();
-	
-	valores.Add(new KeyValuePair<string, string>("MyName", "Jesus"));
-	
-	XML2ESCPOS.XML2ESCPOS.Print("Epson", plantilla, false, Vars:valores);
+    XML2ESCPOS.Engine xML2ESCPOS = new XML2ESCPOS.Engine
+        {
+            Template = "<C><RESET/><LEFT/><B>Hello <![CDATA[MyName]]>!</B><BR><BR><END/></C>",
+            PrinterName = "Epson"
+        };
+    xML2ESCPOS.Vars.Add(new KeyValuePair<string, string>("MyName", "Jesus"));
+    xML2ESCPOS.Print();
 
 Printer print:
 
@@ -128,17 +122,18 @@ Example:
         public string Name { get; set; }
     }
 
-	string plantilla = "<C><RESET/><LEFT/><LOOP VARNAME='clientes'><B>Hello <![CDATA[cliente.Name]]>!</B><BR></LOOP><BR><END/></C>";
+	XML2ESCPOS.Engine xML2ESCPOS = new XML2ESCPOS.Engine
+            {
+                Template = "<C><RESET/><LEFT/><FOREACH VARNAME='clientes'><B>Hello <![CDATA[cliente.Name]]>!</B><BR></FOREACH><BR><END/></C>",
+                PrinterName = "Epson"
+            };
 
-	List<Client> lc = new List<Client>();
-	lc.Add(new Client { Name = "Jesus" });
-	lc.Add(new Client { Name = "Juan" });
-
-	List<KeyValuePair<string,object>> valoresBucle = new List<KeyValuePair<string,object>>();
-	KeyValuePair<string,object> clientevar = new KeyValuePair<string,object>("cliente", lc);
-	valoresBucle.Add(clientevar);
-
-	XML2ESCPOS.XML2ESCPOS.Print("Epson", plantilla, false, BucleVars:valoresBucle);
+    List<Client> lc = new List<Client>();
+    lc.Add(new Client { Name = "Jesus" });
+    lc.Add(new Client { Name = "Juan" });
+    
+    xML2ESCPOS.BucleVars.Add(new KeyValuePair<string, object>("cliente", lc));
+    xML2ESCPOS.Print();
 
 Printer print:
 

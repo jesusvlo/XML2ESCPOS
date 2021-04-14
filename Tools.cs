@@ -9,25 +9,6 @@ namespace XML2ESCPOS
 {
     public static class Tools
     {
-        /* <RESET/>
-        * <END/>
-        * <LEFT/>
-        * <CENTER/>
-        * <RIGHT/>
-        * <DHEIGHT></DHEIGHT>
-        * <DWIDTH></DWIDTH>
-        * <BOLD></BOLD>
-        * <U></U> UNDERLINE
-        * <U2></U2> UNDERLINE 2-DOTS
-        * <BR/> NUEVA LINE \n
-        * <DEFTABS N1='10',N2='20'.. />
-        * <TAB>
-        * <IMAGE PATH='imagen con path relativo al directorio actual'/>
-        * <![CDATA[Nombre variable]/>
-        * <LOOP VARNAME='Nombre variable IEnumerable'></>
-        * <![CDATA[Nombre variable IEnumerable.Propiedad]/>
-        */
-
         public static int ToNumeral(this BitArray binary)
         {
             if (binary == null)

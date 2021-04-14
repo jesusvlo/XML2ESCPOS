@@ -8,14 +8,16 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace XML2ESCPOS
 {
-	public static class XML2ESCPOS
+	public class Engine
 	{
-		static readonly List<TagSimple> simples;
+		readonly List<TagSimple> simples;
 		const char ESC = '\x1b';
 		const char GS = '\x1d';
 		const string p = "\u0070";
@@ -23,7 +25,42 @@ namespace XML2ESCPOS
 		const string t1 = "\u0025";
 		const string t2 = "\u0250";
 
-		static XML2ESCPOS()
+		private string _printerName;
+		public string PrinterName 
+		{ 
+			get => _printerName;
+			set
+			{
+				if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+					throw new InvalidOperationException("Only valid on Windows");
+	            else
+                {
+					_printerName = value;
+					_printerIP = null;
+                }
+			}
+		}
+		public string PrinterIP 
+		{
+			get => _printerIP.ToString();
+			set 
+			{
+				bool ValidateIP = IPAddress.TryParse(value, out _printerIP);
+				if (!ValidateIP)
+					throw new InvalidOperationException("Invalid IP Address");
+				else
+					PrinterName = null;
+			} 
+		}
+		private IPAddress _printerIP;
+		int? PrinterCodePage { get; set; }
+		string PrintJobName { get; set; }
+		public string Template { get; set; }
+		public List<KeyValuePair<string, string>> Vars { get;  private set; }
+		public List<KeyValuePair<string, object>> BucleVars { get; private set; }
+
+
+		public Engine()
 		{
 			simples = new List<TagSimple>();
 			simples.Add(new TagSimple { Tag = "BR", Start = "\n", End = "" });
@@ -36,22 +73,69 @@ namespace XML2ESCPOS
 			simples.Add(new TagSimple { Tag = "TAB", Start = "\x09", End = "" });
 			simples.Add(new TagSimple { Tag = "RESET", Start = ESC + "@", End = "" });
 			simples.Add(new TagSimple { Tag = "END", Start = GS + "V\x41\0", End = "" });
+			if (Template == null)
+				Template = "";
+			if (PrinterCodePage == null)
+				PrinterCodePage = 858;
+
+			Vars = new List<KeyValuePair<string, string>>();
+			BucleVars = new List<KeyValuePair<string, object>>();
 		}
 
-		public static void OpenDrawer(string ImpresoraOrIP, bool EsIP = true)
+		byte[] EncodeToBytes(string Info)
         {
-			string openTillCommand = ESC + p + m + t1 + t2;
-			Print(ImpresoraOrIP, openTillCommand, EsIP, "OpenDrawer");
+			int CP = 858;
+			if (PrinterCodePage != null)
+				CP = PrinterCodePage ?? default(int);
+			Encoding utf8 = Encoding.UTF8;
+			CodePagesEncodingProvider.Instance.GetEncoding(CP);
+			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+			Encoding encoding = Encoding.GetEncoding(CP);
+			return Encoding.UTF8.GetBytes(Info);
 		}
 
-		public static void Print(string PrinterOrIP, string Plantilla, bool EsIP = true, string NombreTrabajo = "Printer Job", int CodePage = 858, List<KeyValuePair<string, string>> Vars = null, List<KeyValuePair<string, object>> BucleVars = null)
+		void DirectPrint(byte[] bytes, string PrintJobNamePar)
+		{
+			if (!string.IsNullOrWhiteSpace(_printerName) | _printerIP != null)
+				try
+				{
+					if (!string.IsNullOrWhiteSpace(_printerName))
+					{
+						IPrinter Iprinter = new Printer();
+						Iprinter.PrintRawStream(_printerName, new MemoryStream(bytes), PrintJobNamePar);
+					}
+					else
+					{
+						Socket clientSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+						clientSock.NoDelay = true;
+						IPEndPoint remoteEP = new IPEndPoint(_printerIP, 9100);
+						clientSock.Connect(remoteEP);
+						clientSock.Send(bytes);
+						clientSock.Close();
+					}
+				}
+				catch
+				{
+					// Exception here could mean difficulties in connecting to the printer etc
+					//                await DisplayAlert("Error", $"Failed to print redemption slip\nReason: {ex.Message}", "OK");
+				}
+			else
+				throw new InvalidOperationException("Invalid Printer");
+		}
+
+		public void OpenDrawer()
+		{
+			DirectPrint(EncodeToBytes(ESC + p + m + t1 + t2), "OpenDrawer");
+		}
+
+		public void Print()
 		{
 			//Compruebo que las variables de bucle son todas ienumerables
 			if (BucleVars != null)
 				foreach (KeyValuePair<string, object> item in BucleVars)
 					if (item.Value as IEnumerable == null)
 						return;
-			XmlDocumentSyntax parser = Parser.ParseText(Plantilla);
+			XmlDocumentSyntax parser = Parser.ParseText(Template);
 			XmlElementSyntax root = parser.Root as XmlElementSyntax;
 			string Result = "";
 			BitArray PrintMode = new BitArray(8);
@@ -59,12 +143,17 @@ namespace XML2ESCPOS
 			Dictionary<string, object> varsBucleActivas = new Dictionary<string, object>();
 			if (root != null)
 			{
-				Recursivo(root, ref Result, ref PrintMode, Vars, ref imagenes, ref varsBucleActivas, BucleVars);
+				Recursivo(root, ref Result, ref PrintMode, ref imagenes, ref varsBucleActivas);
 			}
+
+			int CP = 858;
+			if (PrinterCodePage != null)
+				CP = PrinterCodePage ?? default(int);
+
 			Encoding utf8 = Encoding.UTF8;
-			CodePagesEncodingProvider.Instance.GetEncoding(CodePage);
+			CodePagesEncodingProvider.Instance.GetEncoding(CP);
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-			Encoding encoding = Encoding.GetEncoding(CodePage);
+			Encoding encoding = Encoding.GetEncoding(CP);
 
 			string[] trozos = Result.Split("<IMAGE>");
 			List<byte> convertedBytes = new List<byte>();
@@ -82,38 +171,13 @@ namespace XML2ESCPOS
 				primero = false;
 			}
 			byte[] final = convertedBytes.ToArray();
-			if (!EsIP)
-			{
-				try
-				{
-					new Thread(() =>
-					{
-						Thread.CurrentThread.IsBackground = true;
 
-						IPrinter Iprinter = new Printer();
-						Iprinter.PrintRawStream(PrinterOrIP, new MemoryStream(final), NombreTrabajo);
-					}).Start();
-				}
-				catch
-				{
-					// Exception here could mean difficulties in connecting to the printer etc
-					//                await DisplayAlert("Error", $"Failed to print redemption slip\nReason: {ex.Message}", "OK");
-				}
-			}
-			else
-			{
-				Socket clientSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-				clientSock.NoDelay = true;
-				IPAddress ip = IPAddress.Parse(PrinterOrIP);
-				IPEndPoint remoteEP = new IPEndPoint(ip, 9100);
-				clientSock.Connect(remoteEP);
-				clientSock.Send(final);
-				clientSock.Close();
-			}
+			if (PrintJobName == null)
+				PrintJobName = "PrintJob";
+			DirectPrint(final, PrintJobName);
 		}
 
-		static void Recursivo(XmlElementSyntax item, ref string texto, ref BitArray PrintMode, List<KeyValuePair<string, string>> valores, ref List<KeyValuePair<string, int>> imagenes,
-			ref Dictionary<string, object> varsBucleActivas, List<KeyValuePair<string, object>> BucleVars = null)
+		void Recursivo(XmlElementSyntax item, ref string texto, ref BitArray PrintMode, ref List<KeyValuePair<string, int>> imagenes, ref Dictionary<string, object> varsBucleActivas)
 		{
 			foreach (var elem in item.Content)
 			{
@@ -124,10 +188,10 @@ namespace XML2ESCPOS
 						break;
 					case "XmlElementSyntax":
 						XmlElementSyntax thisElemSyntax = elem as XmlElementSyntax;
-						if (thisElemSyntax.Name != "IFNOTNULL" & thisElemSyntax.Name != "LOOP")
+						if (thisElemSyntax.Name != "IFNOTNULL" & thisElemSyntax.Name != "FOREACH")
 						{
 							texto += GetIns(thisElemSyntax.Name, true, ref PrintMode);
-							Recursivo(thisElemSyntax, ref texto, ref PrintMode, valores, ref imagenes, ref varsBucleActivas, BucleVars);
+							Recursivo(thisElemSyntax, ref texto, ref PrintMode, ref imagenes, ref varsBucleActivas);
 							texto += GetIns(thisElemSyntax.Name, false, ref PrintMode);
 						}
 						else
@@ -139,14 +203,14 @@ namespace XML2ESCPOS
 									string varName = thisElemSyntax.StartTag.AttributesNode.First().Value;
 									if (thisElemSyntax.Name == "IFNOTNULL")
 									{
-										IEnumerable<KeyValuePair<string, string>> lv1 = valores.Where(x => x.Key == varName);
+										IEnumerable<KeyValuePair<string, string>> lv1 = Vars.Where(x => x.Key == varName);
 										if (lv1.Any())
 										{
 											if (!string.IsNullOrWhiteSpace(lv1.First().Value))
-												Recursivo(thisElemSyntax, ref texto, ref PrintMode, valores, ref imagenes, ref varsBucleActivas, BucleVars);
+												Recursivo(thisElemSyntax, ref texto, ref PrintMode, ref imagenes, ref varsBucleActivas);
 										}
 									}
-									else //Entonces es LOOP
+									else //Entonces es FOREACH
 									{
 										IEnumerable<KeyValuePair<string, object>> lv2 = BucleVars.Where(x => x.Key == varName);
 										IEnumerable<KeyValuePair<string, object>> ln = varsBucleActivas.Where(x => x.Key == varName);
@@ -156,11 +220,11 @@ namespace XML2ESCPOS
 											foreach (object itemBucle in lv2.First().Value as IEnumerable)
 											{
 												varsBucleActivas[varName] = itemBucle;
-												Recursivo(thisElemSyntax, ref texto, ref PrintMode, valores, ref imagenes, ref varsBucleActivas, BucleVars);
+												Recursivo(thisElemSyntax, ref texto, ref PrintMode, ref imagenes, ref varsBucleActivas);
 											}
 										}
 										else
-											Recursivo(thisElemSyntax, ref texto, ref PrintMode, valores, ref imagenes, ref varsBucleActivas, BucleVars);
+											Recursivo(thisElemSyntax, ref texto, ref PrintMode, ref imagenes, ref varsBucleActivas);
 									}
 								}
 							}
@@ -198,7 +262,7 @@ namespace XML2ESCPOS
 						break;
 					case "XmlCDataSectionSyntax":
 						string var = (elem as XmlCDataSectionSyntax).Value;
-						IEnumerable<KeyValuePair<string, string>> lv = valores.Where(x => x.Key == var);
+						IEnumerable<KeyValuePair<string, string>> lv = Vars.Where(x => x.Key == var);
 						if (lv.Any())
 							texto += lv.First().Value;
 						if (var.Contains("."))
@@ -218,7 +282,7 @@ namespace XML2ESCPOS
 			}
 		}
 
-		static string GetIns(string Name, bool Inicial, ref BitArray PrintMode)
+		string GetIns(string Name, bool Inicial, ref BitArray PrintMode)
 		{
 			string Result = "";
 			IEnumerable<TagSimple> lt = simples.Where(x => x.Tag == Name);
@@ -248,5 +312,5 @@ namespace XML2ESCPOS
 			}
 			return Result;
 		}
-	}
+    }
 }
