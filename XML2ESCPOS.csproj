@@ -13,6 +13,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="LICENSE" />
+    <None Remove="LICENSE" />
+    <None Include="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="GuiLabs.Language.Xml" Version="1.2.46" />
     <PackageReference Include="RawPrint.NetStd" Version="1.0.0" />
     <PackageReference Include="SkiaSharp" Version="2.80.2" />
@@ -20,10 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\RawPrint.NetStd\LICENSE">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
     <None Include="..\RawPrint.NetStd\README.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
