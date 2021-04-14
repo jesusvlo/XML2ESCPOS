@@ -15,5 +15,4 @@ valores.Add(new KeyValuePair<string, string>("Num", "1234546"));
 
 XML2ESCPOS.XML2ESCPOS.Imprimir("bebida", Template, "Ticket", EsIP:false, Vars: valores);
 
-"bebida" is the windows printer name
-"Ticket" is the printer job name
+"bebida" is the windows printer name, "Ticket" is the printer job name.
