@@ -9,14 +9,14 @@ Example:
 
     XML2ESCPOS.Engine xML2ESCPOS = new XML2ESCPOS.Engine
     {
-         Template = "<C><RESET/><CENTER/><B>Hello!</B><BR><BR><END/></C>",
+         Template = "<C><RESET/><CENTER/>Hello!<BR><BR><END/></C>",
          PrinterName = "Epson"
     };
     xML2ESCPOS.Print();
 
 Printer print:
 
-            **Hello!**
+            Hello!
 
 
 
