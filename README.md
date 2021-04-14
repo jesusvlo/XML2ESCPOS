@@ -58,9 +58,25 @@ If PrinterOrIP is Ip Address you can ignore it or you can set to True
 
 \<END/> Feed and cut paper
 
+\<BR/> or \<BR> New Line
+
+\<TAB/> or \<TAB> Next Tab
+
 \<B> \</B> Emphasized Text
 
+\<U> \</U> Underline Text
 
+\<U2> \</U2> Underline 2-points Text
+
+\<DHEIGHT> \</DHEIGHT> Double Height Text
+
+\<DWIDTH> \</DWIDTH> Double Width Text
+
+\<> \</> 
+
+\<> \</> 
+
+\<> \</> 
 
 
 
