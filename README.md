@@ -131,8 +131,8 @@ Example:
 	string plantilla = "<C><RESET/><LEFT/><LOOP VARNAME='clientes'><B>Hello <![CDATA[cliente.Name]]>!</B><BR></LOOP><BR><END/></C>";
 
 	List<Client> lc = new List<Client>();
-	lc.Add(new ClienteT { Name = "Jesus" });
-	lc.Add(new ClienteT { Name = "Juan" });
+	lc.Add(new Client { Name = "Jesus" });
+	lc.Add(new Client { Name = "Juan" });
 
 	List<KeyValuePair<string,object>> valoresBucle = new List<KeyValuePair<string,object>>();
 	KeyValuePair<string,object> clientevar = new KeyValuePair<string,object>("cliente", lc);
