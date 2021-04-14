@@ -50,11 +50,11 @@ If PrinterOrIP is Ip Address you can ignore it or you can set to True
 
 \<RESET/> Initialize printer
 
-\<LEFT/> Left justification. This command is enabled only when processed at the beginning of the line. Settings of this command are effective until \<RIGHT/> or \<CENTER/> or \<RESET/>
+\<LEFT/> Left justification. This command is enabled only when processed at the beginning of the line. Settings of this command are effective until \<RIGHT/> or \<CENTER/> or \<RESET/> or power off
 
-\<CENTER/> Left justification. This command is enabled only when processed at the beginning of the line. Settings of this command are effective until \<LEFT/> or \<CENTER/> or \<RESET/>
+\<CENTER/> Left justification. This command is enabled only when processed at the beginning of the line. Settings of this command are effective until \<LEFT/> or \<CENTER/> or \<RESET/> or power off
 
-\<RIGHT/> Left justification. This command is enabled only when processed at the beginning of the line. Settings of this command are effective until \<LEFT/> or \<RIGHT/> or \<RESET/>
+\<RIGHT/> Left justification. This command is enabled only when processed at the beginning of the line. Settings of this command are effective until \<LEFT/> or \<RIGHT/> or \<RESET/> or power off
 
 \<END/> Feed and cut paper
 
@@ -72,9 +72,15 @@ If PrinterOrIP is Ip Address you can ignore it or you can set to True
 
 \<DWIDTH> \</DWIDTH> Double Width Text
 
-\<> \</> 
+\<IMAGE PATH='path' F='f'/> Print Image. PATH: path relative to current directory.
+F: size factor (integer), depent on printer model.
 
-\<> \</> 
+Example in Template: \<IMAGE PATH='wwwroot\\img\\logo.jpg' F='200'/>
+
+
+\<DEFTABS N1='n1' N2='n2' .../> Set horizontal tab positions. Settings of this command are effective until another \<DEFTABS/> or\<RESET/> or power off
+
+Example in Template: \<DEFTABS N1='2' N2='15' N3='25'/>
 
 \<> \</> 
 
