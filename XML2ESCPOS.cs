@@ -32,7 +32,7 @@ namespace XML2ESCPOS
 			simples.Add(new TagSimple { Tag = "RIGHT", Start = ESC + "a" + (char)2, End = "" });
 			simples.Add(new TagSimple { Tag = "U", Start = ESC + "-" + (char)1, End = ESC + "-" + (char)0 });
 			simples.Add(new TagSimple { Tag = "U2", Start = ESC + "-" + (char)2, End = ESC + "-" + (char)0 });
-			simples.Add(new TagSimple { Tag = "BOLD", Start = ESC + "E" + (char)1, End = ESC + "E" + (char)0 });
+			simples.Add(new TagSimple { Tag = "B", Start = ESC + "E" + (char)1, End = ESC + "E" + (char)0 });
 			simples.Add(new TagSimple { Tag = "TAB", Start = "\x09", End = "" });
 			simples.Add(new TagSimple { Tag = "RESET", Start = ESC + "@", End = "" });
 			simples.Add(new TagSimple { Tag = "END", Start = GS + "V\x41\0", End = "" });
@@ -42,7 +42,6 @@ namespace XML2ESCPOS
         {
 			string openTillCommand = ESC + p + m + t1 + t2;
 			Print(ImpresoraOrIP, openTillCommand, EsIP, "OpenDrawer");
-			IEnumerable
 		}
 
 		public static void Print(string PrinterOrIP, string Plantilla, bool EsIP = true, string NombreTrabajo = "Printer Job", int CodePage = 858, List<KeyValuePair<string, string>> Vars = null, List<KeyValuePair<string, object>> BucleVars = null)

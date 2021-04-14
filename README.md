@@ -15,6 +15,8 @@ Printer print:
 
             **Hello!**
 
+
+
 #### Usage:
 
 **Print(PrinterOrIP, Plantilla, EsIP, NombreTrabajo, CodePage, Vars, BucleVars)**
@@ -34,6 +36,40 @@ https://docs.microsoft.com/en-us/windows/win32/intl/code-page-identifiers
 Vars: (Opcional List<KeyValuePair<string, string>>) List of the variables that you are going to use with their name and value. [More Info](#Vars)
 
 BubleVars: (Opcional IEnumerable<KeyValuePair<string, string>>) List of variables that are the lists that you will use with each loop with its name [More Info](#BucleVars)
+
+**OpenDrawer(PrinterOrIP, EsIP)**
+
+Only Open Drawer		
+
+ImpresoraOrIP: (Required String) Windows Printer Name if EsIP = false or IP Address if EsIP = true
+
+EsIP: (Optional Bool, Default is True) If PrinterOrIp is System Windows Printer Name you must set to false.
+If PrinterOrIP is Ip Address you can ignore it or you can set to True
+
+#### XML Codes:
+
+\<RESET/> Initialize printer
+
+\<LEFT/> Left justification. This command is enabled only when processed at the beginning of the line. Settings of this command are effective until \<RIGHT/> or \<CENTER/> or \<RESET/>
+
+\<CENTER/> Left justification. This command is enabled only when processed at the beginning of the line. Settings of this command are effective until \<LEFT/> or \<CENTER/> or \<RESET/>
+
+\<RIGHT/> Left justification. This command is enabled only when processed at the beginning of the line. Settings of this command are effective until \<LEFT/> or \<RIGHT/> or \<RESET/>
+
+\<END/> Feed and cut paper
+
+\<B> \</B> Emphasized Text
+
+
+
+
+
+
+
+
+
+
+
 
 #### Vars:
 Example:
