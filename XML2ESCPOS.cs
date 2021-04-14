@@ -63,7 +63,7 @@ namespace XML2ESCPOS
 			{
 				if (trozos.Count() > 1 & !primero)
 				{
-					convertedBytes.AddRange(ESCPOSHelper.GetImageBytes(imagenes[index].Key, imagenes[index].Value).ToList());
+					convertedBytes.AddRange(Tools.GetImageBytes(imagenes[index].Key, imagenes[index].Value).ToList());
 					index++;
 				}
 				byte[] utfBytes = Encoding.UTF8.GetBytes(trozo);
@@ -220,14 +220,14 @@ namespace XML2ESCPOS
 						PrintMode[5] = true;
 					else
 						PrintMode[5] = false;
-					Result = ESC + "!" + (char)ESCPOSHelper.ToNumeral(PrintMode);
+					Result = ESC + "!" + (char)Tools.ToNumeral(PrintMode);
 					break;
 				case "DHEIGHT":
 					if (Inicial)
 						PrintMode[4] = true;
 					else
 						PrintMode[4] = false;
-					Result = ESC + "!" + (char)ESCPOSHelper.ToNumeral(PrintMode);
+					Result = ESC + "!" + (char)Tools.ToNumeral(PrintMode);
 					break;
 			}
 			return Result;
