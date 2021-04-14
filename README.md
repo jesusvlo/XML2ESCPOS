@@ -31,9 +31,16 @@ Vars: (Opcional List<KeyValuePair<string, string>>) List of the variables that y
 
 
 
-##### Vars
+#### Vars
+Example:
 
-##### BubleVars
+	string plantilla = "<C><RESET/><CENTER/><B>Hello <![CDATA[MyName]]>!<B/><BR><BR><END/><C/>";
+	List<KeyValuePair<string, string>> valores = new List<KeyValuePair<string, string>>();
+	valores.Add(new KeyValuePair<string, string>("MyName", "1234546"));
+	XML2ESCPOS.XML2ESCPOS.Print("Epson", plantilla, false, Vars:valores);
+
+
+#### BubleVars
 
 
 
