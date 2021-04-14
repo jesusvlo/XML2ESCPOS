@@ -5,9 +5,9 @@ Net Standard library that provides a simple XML Template engine with support for
 For ESC / POS Thermal Printers. 
 You can print to Windows printers (using the print queue so windows takes care of waiting for it to turn on or have paper) or directly to network printers. 
 
-QuickStart
+Simple Example
 
-string Template = "<TEMPLATE><RESET/><IMAGE PATH='wwwroot\\img\\logo.jpg' F='200'/>" +
+string Template = "<TEMPLATE><RESET/><CENTER><IMAGE PATH='wwwroot\\img\\logo.jpg' F='200'/>" +
 				"<LEFT/><B>Factura Nº: <![CDATA[NumFact]]><TAB>Mesa: <![CDATA[NumMesa]]><IFNOTNULL VARNAME='NumCuenta'>/<![CDATA[NumCuenta]]></IFNOTNULL></B><BR><BR>" +
 				"<![CDATA[Fecha]]><BR>" +
 				"<CENTER/><DWIDTH><DHEIGHT>------------------------</DHEIGHT></DWIDTH><BR>" +
