@@ -82,13 +82,25 @@ Example in Template: \<IMAGE PATH='wwwroot\\img\\logo.jpg' F='200'/>
 
 Example in Template: \<DEFTABS N1='2' N2='15' N3='25'/>
 
-\<> \</> 
+\<IFNOTNULL VARNAME='varname'> \</IFNOTNULL> Print the inside only if the variable is not null or empty or only white spaces 
 
+Example:
 
+	string plantilla = "<C><RESET/><LEFT/><IFNOTNULL VARNAME='MyName'><B>Hello <![CDATA[MyName]]>!</B></IFNOTNULL><BR>" +
 
+		"<IFNOTNULL VARNAME='MyName'><B>Hello <![CDATA[YourName]]>!</B></IFNOTNULL><BR><END/></C>";
+	
+	List<KeyValuePair<string, string>> valores = new List<KeyValuePair<string, string>>();
+	
+	valores.Add(new KeyValuePair<string, string>("MyName", "Jesus"));
 
+	valores.Add(new KeyValuePair<string, string>("YourName", "  "));
+	
+	XML2ESCPOS.XML2ESCPOS.Print("Epson", plantilla, false, Vars:valores);	
 
+Printer Print:
 
+**Hello Jesus!**
 
 
 
