@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 
 namespace XML2ESCPOS
 {
@@ -17,6 +18,10 @@ namespace XML2ESCPOS
 		static readonly List<TagSimple> simples;
 		const char ESC = '\x1b';
 		const char GS = '\x1d';
+		const string p = "\u0070";
+		const string m = "\u0000";
+		const string t1 = "\u0025";
+		const string t2 = "\u0250";
 
 		static XML2ESCPOS()
 		{
@@ -33,7 +38,13 @@ namespace XML2ESCPOS
 			simples.Add(new TagSimple { Tag = "END", Start = GS + "V\x41\0", End = "" });
 		}
 
-		public static void Imprimir(string ImpresoraOrIP, string Plantilla, string NombreTrabajo, int CodePage = 858, bool EsIP = true, List<KeyValuePair<string, string>> Vars = null, List<KeyValuePair<string, object>> BucleVars = null)
+		public static void OpenDrawer(string ImpresoraOrIP, bool EsIP = true)
+        {
+			string openTillCommand = ESC + p + m + t1 + t2;
+			Print(ImpresoraOrIP, openTillCommand, EsIP, "OpenDrawer");
+		}
+
+		public static void Print(string PrinterOrIP, string Plantilla, bool EsIP = true, string NombreTrabajo = "Printer Job", int CodePage = 858, List<KeyValuePair<string, string>> Vars = null, List<KeyValuePair<string, object>> BucleVars = null)
 		{
 			//Compruebo que las variables de bucle son todas ienumerables
 			if (BucleVars != null)
@@ -75,8 +86,13 @@ namespace XML2ESCPOS
 			{
 				try
 				{
-					IPrinter Iprinter = new Printer();
-					Iprinter.PrintRawStream(ImpresoraOrIP, new MemoryStream(final), NombreTrabajo);
+					new Thread(() =>
+					{
+						Thread.CurrentThread.IsBackground = true;
+
+						IPrinter Iprinter = new Printer();
+						Iprinter.PrintRawStream(PrinterOrIP, new MemoryStream(final), NombreTrabajo);
+					}).Start();
 				}
 				catch
 				{
@@ -88,7 +104,7 @@ namespace XML2ESCPOS
 			{
 				Socket clientSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 				clientSock.NoDelay = true;
-				IPAddress ip = IPAddress.Parse(ImpresoraOrIP);
+				IPAddress ip = IPAddress.Parse(PrinterOrIP);
 				IPEndPoint remoteEP = new IPEndPoint(ip, 9100);
 				clientSock.Connect(remoteEP);
 				clientSock.Send(final);
