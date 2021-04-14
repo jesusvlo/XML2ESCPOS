@@ -28,8 +28,6 @@ namespace XML2ESCPOS
         * <![CDATA[Nombre variable IEnumerable.Propiedad]/>
         */
 
-
-
         public static int ToNumeral(this BitArray binary)
         {
             if (binary == null)
