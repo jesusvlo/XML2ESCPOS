@@ -1,4 +1,4 @@
 XML2ESCPOS
 ==========
 
-Biblioteca Net Standard que proporciona un motor simple de Plantillas XML con soporte para imagenes ,variables y bucles. Para Impresoras termicas ESC/POS. Puede imprimir en las impresoras de Windows (utilizando la cola de impresion por lo que windows se encarga de esperar a que se encienda o tenga papel) o directamente en impresoras de red.
+Net Standard library that provides a simple XML Template engine with support for images, variables and loops. For ESC / POS Thermal Printers. You can print to Windows printers (using the print queue so windows takes care of waiting for it to turn on or have paper) or directly to network printers. 
