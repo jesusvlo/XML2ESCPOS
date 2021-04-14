@@ -42,6 +42,7 @@ namespace XML2ESCPOS
         {
 			string openTillCommand = ESC + p + m + t1 + t2;
 			Print(ImpresoraOrIP, openTillCommand, EsIP, "OpenDrawer");
+			IEnumerable
 		}
 
 		public static void Print(string PrinterOrIP, string Plantilla, bool EsIP = true, string NombreTrabajo = "Printer Job", int CodePage = 858, List<KeyValuePair<string, string>> Vars = null, List<KeyValuePair<string, object>> BucleVars = null)

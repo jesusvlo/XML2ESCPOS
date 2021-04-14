@@ -7,11 +7,15 @@ You can print to Windows printers (using the print queue so windows takes care o
 
 Example:
 
-	string plantilla = "<C><RESET/><CENTER/><B>Hello!<B/><BR><BR><END/><C/>";
+	string plantilla = "<C><RESET/><CENTER/><B>Hello!</B><BR><BR><END/></C>";
 
 	XML2ESCPOS.XML2ESCPOS.Print("Epson", plantilla, false);
 
-Usage:
+Printer print:
+
+            **Hello!**
+
+#### Usage:
 
 **Print(PrinterOrIP, Plantilla, EsIP, NombreTrabajo, CodePage, Vars, BucleVars)**
 		
@@ -29,18 +33,44 @@ https://docs.microsoft.com/en-us/windows/win32/intl/code-page-identifiers
 
 Vars: (Opcional List<KeyValuePair<string, string>>) List of the variables that you are going to use with their name and value. [More Info](#Vars)
 
+BubleVars: (Opcional IEnumerable<KeyValuePair<string, string>>) List of variables that are the lists that you will use with each loop with its name [More Info](#BucleVars)
 
-
-#### Vars
+#### Vars:
 Example:
 
-	string plantilla = "<C><RESET/><CENTER/><B>Hello <![CDATA[MyName]]>!<B/><BR><BR><END/><C/>";
+	string plantilla = "<C><RESET/><LEFT/><B>Hello <![CDATA[MyName]]>!</B><BR><BR><END/></C>";
+	
 	List<KeyValuePair<string, string>> valores = new List<KeyValuePair<string, string>>();
-	valores.Add(new KeyValuePair<string, string>("MyName", "1234546"));
+	
+	valores.Add(new KeyValuePair<string, string>("MyName", "Jesus"));
+	
 	XML2ESCPOS.XML2ESCPOS.Print("Epson", plantilla, false, Vars:valores);
 
+Printer print:
 
-#### BubleVars
+**Hello Jesus!**
 
+#### BucleVars:
+Example:
 
+	public class Client
+    {
+        public string Name { get; set; }
+    }
 
+	string plantilla = "<C><RESET/><LEFT/><LOOP VARNAME='clientes'><B>Hello <![CDATA[cliente.Name]]>!</B><BR></LOOP><BR><END/></C>";
+
+	List<Client> lc = new List<Client>();
+	lc.Add(new ClienteT { Name = "Jesus" });
+	lc.Add(new ClienteT { Name = "Juan" });
+
+	List<KeyValuePair<string,object>> valoresBucle = new List<KeyValuePair<string,object>>();
+	KeyValuePair<string,object> clientevar = new KeyValuePair<string,object>("cliente", lc);
+	valoresBucle.Add(clientevar);
+
+	XML2ESCPOS.XML2ESCPOS.Print("Epson", plantilla, false, BucleVars:valoresBucle);
+
+Printer print:
+
+**Hello Jesus!**
+**Hello Juan!**
