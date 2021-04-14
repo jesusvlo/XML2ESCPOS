@@ -7,7 +7,7 @@ You can print to Windows printers (using the print queue so windows takes care o
 
 QuickStart
 
-string Template = "\<TEMPLATE\>\<RESET/\>\<IMAGE PATH='wwwroot\\img\\logo.jpg' F='200'/\>\<LEFT/\>\<B\>Factura Nº: \<![CDATA[NumFact]]\>";				
+string Template = "\<AA\>\<RESET/\>\<IMAGE PATH='wwwroot\\img\\logo.jpg' F='200'/\>\<LEFT/\>\<B\>Factura Nº: \<![CDATA[NumFact]]\>\<BR>\<AA/>";				
 
 List<KeyValuePair<string, string>> valores = new List<KeyValuePair<string, string>>();
 valores.Add(new KeyValuePair<string, string>("NumFact", "1234546"));
