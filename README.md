@@ -124,7 +124,7 @@ Example:
 
 	XML2ESCPOS.Engine xML2ESCPOS = new XML2ESCPOS.Engine
             {
-                Template = "<C><RESET/><LEFT/><FOREACH VARNAME='clientes'><B>Hello <![CDATA[cliente.Name]]>!</B><BR></FOREACH><BR><END/></C>",
+                Template = "<C><RESET/><LEFT/><FOREACH VARNAME='clientes'><B>Hello <![CDATA[clientes.Name]]>!</B><BR></FOREACH><BR><END/></C>",
                 PrinterName = "Epson"
             };
 
@@ -132,7 +132,7 @@ Example:
     lc.Add(new Client { Name = "Jesus" });
     lc.Add(new Client { Name = "Juan" });
     
-    xML2ESCPOS.BucleVars.Add(new KeyValuePair<string, object>("cliente", lc));
+    xML2ESCPOS.BucleVars.Add(new KeyValuePair<string, object>("clientes", lc));
     xML2ESCPOS.Print();
 
 Printer print:

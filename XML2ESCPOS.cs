@@ -212,19 +212,46 @@ namespace XML2ESCPOS
 									}
 									else //Entonces es FOREACH
 									{
-										IEnumerable<KeyValuePair<string, object>> lv2 = BucleVars.Where(x => x.Key == varName);
-										IEnumerable<KeyValuePair<string, object>> ln = varsBucleActivas.Where(x => x.Key == varName);
-										if (lv2.Any() & !ln.Any())
+										if (!varName.Contains('.'))
 										{
-											varsBucleActivas.Add(varName, "");
-											foreach (object itemBucle in lv2.First().Value as IEnumerable)
+											IEnumerable<KeyValuePair<string, object>> lv2 = BucleVars.Where(x => x.Key == varName);
+											IEnumerable<KeyValuePair<string, object>> ln = varsBucleActivas.Where(x => x.Key == varName);
+											if (lv2.Any() & !ln.Any())
 											{
-												varsBucleActivas[varName] = itemBucle;
+												varsBucleActivas.Add(varName, "");
+												foreach (object itemBucle in lv2.First().Value as IEnumerable)
+												{
+													varsBucleActivas[varName] = itemBucle;
+													Recursivo(thisElemSyntax, ref texto, ref PrintMode, ref imagenes, ref varsBucleActivas);
+												}
+												varsBucleActivas.Remove(varName);
+											}
+											else
+											{
 												Recursivo(thisElemSyntax, ref texto, ref PrintMode, ref imagenes, ref varsBucleActivas);
 											}
 										}
 										else
-											Recursivo(thisElemSyntax, ref texto, ref PrintMode, ref imagenes, ref varsBucleActivas);
+                                        {
+											List<string> partesVarName = varName.Split('.').ToList();
+											IEnumerable<KeyValuePair<string,object>> lvar = varsBucleActivas.Where(x => x.Key == partesVarName[0]);
+											if (lvar.Any())
+                                            {
+												Type t = lvar.First().Value.GetType();
+												PropertyInfo pro = t.GetProperty(partesVarName[1]);
+												varsBucleActivas.Add(varName, "");
+												foreach (object itemBucle in pro.GetValue(lvar.First().Value) as IEnumerable)
+                                                {
+													varsBucleActivas[varName] = itemBucle;
+													Recursivo(thisElemSyntax, ref texto, ref PrintMode, ref imagenes, ref varsBucleActivas);
+												}
+												varsBucleActivas.Remove(varName);
+											}
+											else
+											{
+												Recursivo(thisElemSyntax, ref texto, ref PrintMode, ref imagenes, ref varsBucleActivas);
+											}
+										}
 									}
 								}
 							}
@@ -267,11 +294,13 @@ namespace XML2ESCPOS
 							texto += lv.First().Value;
 						if (var.Contains("."))
 						{
-							string nomVar = var.Substring(0, var.IndexOf('.'));
+							List<string> partesVarName = var.Split('.').ToList();
+
+							string nomVar = var.Substring(0, var.Length-(partesVarName.Last().Length + 1));
 							object obj = null;
 							if (varsBucleActivas.TryGetValue(nomVar, out obj))
 							{
-								string propVar = var.Substring(var.IndexOf('.') + 1);
+								string propVar =partesVarName.Last();
 								Type t = obj.GetType();
 								PropertyInfo pro = t.GetProperty(propVar);
 								texto += pro.GetValue(obj);
