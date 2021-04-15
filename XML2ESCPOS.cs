@@ -72,7 +72,7 @@ namespace XML2ESCPOS
 			simples.Add(new TagSimple { Tag = "B", Start = ESC + "E" + (char)1, End = ESC + "E" + (char)0 });
 			simples.Add(new TagSimple { Tag = "TAB", Start = "\x09", End = "" });
 			simples.Add(new TagSimple { Tag = "RESET", Start = ESC + "@", End = "" });
-			simples.Add(new TagSimple { Tag = "END", Start = GS + "V\x41\0", End = "" });
+			simples.Add(new TagSimple { Tag = "END", Start = "\n" + GS + "V\x41\0", End = "" });
 			if (Template == null)
 				Template = "";
 			if (PrinterCodePage == null)
