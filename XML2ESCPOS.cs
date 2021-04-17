@@ -203,11 +203,29 @@ namespace XML2ESCPOS
 									string varName = thisElemSyntax.StartTag.AttributesNode.First().Value;
 									if (thisElemSyntax.Name == "IFNOTNULL")
 									{
-										IEnumerable<KeyValuePair<string, string>> lv1 = Vars.Where(x => x.Key == varName);
-										if (lv1.Any())
+										if (!varName.Contains('.'))
 										{
-											if (!string.IsNullOrWhiteSpace(lv1.First().Value))
-												Recursivo(thisElemSyntax, ref texto, ref PrintMode, ref imagenes, ref varsBucleActivas);
+											IEnumerable<KeyValuePair<string, string>> lv1 = Vars.Where(x => x.Key == varName);
+											if (lv1.Any())
+											{
+												if (!string.IsNullOrWhiteSpace(lv1.First().Value))
+													Recursivo(thisElemSyntax, ref texto, ref PrintMode, ref imagenes, ref varsBucleActivas);
+											}
+										}
+										else
+                                        {
+											List<string> partesVarName = varName.Split('.').ToList();
+
+											string nomVar = varName.Substring(0, varName.Length - (partesVarName.Last().Length + 1));
+											object obj = null;
+											if (varsBucleActivas.TryGetValue(nomVar, out obj))
+											{
+												string propVar = partesVarName.Last();
+												Type t = obj.GetType();
+												PropertyInfo pro = t.GetProperty(propVar);
+												if (!string.IsNullOrWhiteSpace((string)pro.GetValue(obj)))
+													Recursivo(thisElemSyntax, ref texto, ref PrintMode, ref imagenes, ref varsBucleActivas);
+											}
 										}
 									}
 									else //Entonces es FOREACH
