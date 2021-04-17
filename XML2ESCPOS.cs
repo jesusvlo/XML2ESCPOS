@@ -234,17 +234,19 @@ namespace XML2ESCPOS
 										else
                                         {
 											List<string> partesVarName = varName.Split('.').ToList();
-											IEnumerable<KeyValuePair<string,object>> lvar = varsBucleActivas.Where(x => x.Key == partesVarName[0]);
+											string clasePadre = string.Join('.', partesVarName.GetRange(0, partesVarName.Count - 1));
+											IEnumerable<KeyValuePair<string,object>> lvar = varsBucleActivas.Where(x => x.Key == clasePadre);
 											if (lvar.Any())
-                                            {
+											{
 												Type t = lvar.First().Value.GetType();
-												PropertyInfo pro = t.GetProperty(partesVarName[1]);
+												PropertyInfo pro = t.GetProperty(partesVarName.Last());
 												varsBucleActivas.Add(varName, "");
-												foreach (object itemBucle in pro.GetValue(lvar.First().Value) as IEnumerable)
-                                                {
-													varsBucleActivas[varName] = itemBucle;
-													Recursivo(thisElemSyntax, ref texto, ref PrintMode, ref imagenes, ref varsBucleActivas);
-												}
+												if (pro.GetValue(lvar.First().Value) != null)
+													foreach (object itemBucle in pro.GetValue(lvar.First().Value) as IEnumerable)
+													{
+														varsBucleActivas[varName] = itemBucle;
+														Recursivo(thisElemSyntax, ref texto, ref PrintMode, ref imagenes, ref varsBucleActivas);
+													}
 												varsBucleActivas.Remove(varName);
 											}
 											else
@@ -300,7 +302,7 @@ namespace XML2ESCPOS
 							object obj = null;
 							if (varsBucleActivas.TryGetValue(nomVar, out obj))
 							{
-								string propVar =partesVarName.Last();
+								string propVar = partesVarName.Last();
 								Type t = obj.GetType();
 								PropertyInfo pro = t.GetProperty(propVar);
 								texto += pro.GetValue(obj);
