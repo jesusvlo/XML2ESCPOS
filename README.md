@@ -43,9 +43,9 @@ BubleVars: (List<KeyValuePair<string, string>>) List of variables that are the l
 
 \<LEFT/> Left justification. This command is enabled only when processed at the beginning of the line. Settings of this command are effective until \<RIGHT/> or \<CENTER/> or \<RESET/> or power off
 
-\<CENTER/> Left justification. This command is enabled only when processed at the beginning of the line. Settings of this command are effective until \<LEFT/> or \<CENTER/> or \<RESET/> or power off
+\<CENTER/> Center justification. This command is enabled only when processed at the beginning of the line. Settings of this command are effective until \<LEFT/> or \<CENTER/> or \<RESET/> or power off
 
-\<RIGHT/> Left justification. This command is enabled only when processed at the beginning of the line. Settings of this command are effective until \<LEFT/> or \<RIGHT/> or \<RESET/> or power off
+\<RIGHT/> Right justification. This command is enabled only when processed at the beginning of the line. Settings of this command are effective until \<LEFT/> or \<RIGHT/> or \<RESET/> or power off
 
 \<END/> Feed and cut paper
 
