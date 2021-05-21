@@ -59,6 +59,8 @@ BubleVars: (List<KeyValuePair<string, string>>) List of variables that are the l
 
 \<U2> \</U2> Underline 2-points Text
 
+\<R> \</R> Reverse Text
+
 \<DHEIGHT> \</DHEIGHT> Double Height Text
 
 \<DWIDTH> \</DWIDTH> Double Width Text
