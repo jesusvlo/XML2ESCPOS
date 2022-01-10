@@ -156,7 +156,7 @@ namespace XML2ESCPOS
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 			Encoding encoding = Encoding.GetEncoding(CP);
 
-			string[] trozos = Result.Split("<IMAGE>");
+			string[] trozos = Result.Split(new string[] { "<IMAGE>" }, StringSplitOptions.None);
 			List<byte> convertedBytes = new List<byte>();
 			bool primero = true;
 			int index = 0;
@@ -253,7 +253,7 @@ namespace XML2ESCPOS
 										else
                                         {
 											List<string> partesVarName = varName.Split('.').ToList();
-											string clasePadre = string.Join('.', partesVarName.GetRange(0, partesVarName.Count - 1));
+											string clasePadre = string.Join(".", partesVarName.GetRange(0, partesVarName.Count - 1));
 											IEnumerable<KeyValuePair<string,object>> lvar = varsBucleActivas.Where(x => x.Key == clasePadre);
 											if (lvar.Any())
 											{

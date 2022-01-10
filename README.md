@@ -1,4 +1,4 @@
-XML2ESCPOS
+XML2ESCPOS (NetStd 2.0)
 ==========
 
 Net Standard library that provides a simple XML Template engine with support for images, variables and loops. 

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Version>0.6.4</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Authors>Jesus Villa</Authors>
@@ -10,6 +10,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Description>Net Standard library that provides a simple XML Template engine with support for images, variables and loops. For ESC / POS Thermal Printers. You can print to Windows printers (using the print queue so windows takes care of waiting for it to turn on or have paper) or directly to network printers.</Description>
+    <PackageId>XML2ESCPOS-NetStd-2.0</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,7 +24,7 @@
 
   <ItemGroup>
     <PackageReference Include="GuiLabs.Language.Xml" Version="1.2.46" />
-    <PackageReference Include="RawPrint.NetStd" Version="1.0.0" />
+    <PackageReference Include="RawPrint.NetStd-2.0" Version="1.0.0" />
     <PackageReference Include="SkiaSharp" Version="2.80.2" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
   </ItemGroup>
